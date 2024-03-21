@@ -1,7 +1,8 @@
-package com.nbsb.mybatis;
+package com.nbsb.mybatis.binding;
+
+import com.nbsb.mybatis.session.SqlSession;
 
 import java.lang.reflect.Proxy;
-import java.util.Map;
 
 /**
  * @author: Wanghaonan @戏人看戏
@@ -16,7 +17,7 @@ public class MapperProxyFactory<T> {
         this.mapperInterface = mapperInterface;
     }
 
-    public  T newInstance(Map<String, String> sqlSession) {
+    public  T newInstance(SqlSession sqlSession) {
         //创建mapperProxy代理，因为会调用mapperProxy中的内容
         final MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface);
         return (T) Proxy.newProxyInstance(
