@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
  * @create: 2024/3/21 14:42
  */
 public class MapperRegistry {
+
     private Logger logger = LoggerFactory.getLogger(MapperRegistry.class);
     /**
      * 将已添加的映射器代理加入到 HashMap

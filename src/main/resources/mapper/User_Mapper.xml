@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://github.com/nb-sb/small-mybatis/">
+
+<mapper namespace="com.nbsb.mybatis.test.dao.IUserDao">
+
+    <select id="queryUserInfoById" parameterType="java.lang.Long" resultType="com.nbsb.mybatis.test.po.User">
+        SELECT id,name,age
+        FROM user
+        where id = #{id}
+    </select>
+
+
+</mapper>
