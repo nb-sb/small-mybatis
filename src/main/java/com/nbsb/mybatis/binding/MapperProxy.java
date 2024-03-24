@@ -41,7 +41,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
             MapperMethod mapperMethod = cachedMapperMethod(method);
             Object execute = mapperMethod.execute(sqlSession, args);
             //获取类路径和方法名进行拼接获得调用内容
-            return "你被代理了-" + execute;
+            return execute;
         }
     }
     /**

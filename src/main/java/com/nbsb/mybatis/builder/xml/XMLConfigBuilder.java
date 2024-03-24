@@ -1,21 +1,24 @@
 package com.nbsb.mybatis.builder.xml;
 
 import com.nbsb.mybatis.builder.BaseBuilder;
+import com.nbsb.mybatis.datasource.DataSourceFactory;
 import com.nbsb.mybatis.io.Resources;
+import com.nbsb.mybatis.mapping.BoundSql;
+import com.nbsb.mybatis.mapping.Environment;
 import com.nbsb.mybatis.mapping.MappedStatement;
 import com.nbsb.mybatis.mapping.SqlCommandType;
 import com.nbsb.mybatis.session.Configuration;
+import com.nbsb.mybatis.transaction.jdbc.JdbcTransactionFactory;
+import com.nbsb.mybatis.type.TypeAliasRegistry;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.InputSource;
 
+import javax.sql.DataSource;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +55,9 @@ public class XMLConfigBuilder extends BaseBuilder {
      */
     public Configuration parse() {
         try {
+            System.out.println("root name: "+root.getName());
+            //解析mysql运行环境
+            environmentsElement(root.element("environments"));
             // 解析映射器
             mapperElement(root.element("mappers"));
         } catch (Exception e) {
@@ -59,6 +65,68 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
         return configuration;
     }
+
+    /**
+     *     <!--mysql数据库环境配置-->
+     *     <environments default="development">
+     *         <environment id="development">
+     *             <transactionManager type="JDBC"/>
+     *             <dataSource type="DRUID">
+     *                 <property name="driver" value="com.mysql.jdbc.Driver"/>
+     *                 <property name="url" value="jdbc:mysql://127.0.0.1:3306/mybatis?useUnicode=true"/>
+     *                 <property name="username" value="root"/>
+     *                 <property name="password" value="123456"/>
+     *             </dataSource>
+     *         </environment>
+     *     </environments>
+     * @param mappers
+     * @throws Exception
+     */
+    private void environmentsElement(Element mappers)throws Exception {
+        String environment = mappers.attributeValue("default"); //获取使用配置的环境标识符
+        List<Element> mapperList = mappers.elements("environment");
+        for (Element element : mapperList) {
+            //这里可能会有很多配置，例如dev、test、pro等环境配置，要获取当前使用的
+            String currentEnvironment = element.attributeValue("id");
+            if (!currentEnvironment.equals(environment)) {
+                //如果不是需要的配置的话就跳过，查询下一个
+                continue;
+            }
+            //1.创建事务管理器
+            //获取类型 <transactionManager type="JDBC"/>
+            Element transactionManager = element.element("transactionManager");
+            String type = transactionManager.attributeValue("type");
+            JdbcTransactionFactory jdbcTransactionFactory = (JdbcTransactionFactory) typeAliasRegistry.resolveAlias(type).newInstance();
+            //2.获取数据源
+            Element dataSourceElement = element.element("dataSource");
+            String dataSourceType = dataSourceElement.attributeValue("type");
+            DataSourceFactory dataSourceFactory = (DataSourceFactory) typeAliasRegistry.resolveAlias(dataSourceType).newInstance();
+            List<Element> propertyList = dataSourceElement.elements("property");
+            //创建属性值，类似于一个map的对象
+            Properties props = new Properties();
+            for (Element property : propertyList) {
+                props.setProperty(property.attributeValue("name"), property.attributeValue("value"));
+            }
+            dataSourceFactory.setProperties(props);
+            DataSource dataSource = dataSourceFactory.getDataSource();
+            //3.builder构建环境
+            Environment env = new Environment.Builder(currentEnvironment)
+                    .transactionFactory(jdbcTransactionFactory)
+                    .dataSource(dataSource).build();
+            configuration.setEnvironment(env);
+
+        }
+
+    }
+
+    /**
+     * <mappers>
+     *         <mapper resource="mapper/User_Mapper.xml"/>
+     *         <mapper resource="mapper/Home_Mapper.xml"/>
+     * </mappers>
+     * @param mappers
+     * @throws Exception
+     */
     private void mapperElement(Element mappers) throws Exception {
         System.out.println(mappers.getName());
         List<Element> mapperList = mappers.elements("mapper");
@@ -74,6 +142,13 @@ public class XMLConfigBuilder extends BaseBuilder {
             // SELECT
             List<Element> selectNodes = root.elements("select");
             for (Element node : selectNodes) {
+                /**
+                 * <select id="queryUserInfoById" parameterType="java.lang.Long" resultType="com.nbsb.mybatis.test.po.User">
+                 *         SELECT id,name,age
+                 *         FROM user
+                 *         where id = #{id}
+                 * </select>
+                 */
                 String id = node.attributeValue("id");
                 String parameterType = node.attributeValue("parameterType");
                 String resultType = node.attributeValue("resultType");
@@ -93,7 +168,8 @@ public class XMLConfigBuilder extends BaseBuilder {
                 String msId = namespace + "." + id;//方法的类，如：com.nbsb.mybatis.test.dao.IUserDao.queryUserInfoById
                 String nodeName = node.getName();
                 SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
-                MappedStatement mappedStatement = new MappedStatement.Builder( msId, sqlCommandType, parameterType, resultType, sql, parameter).build();
+                BoundSql boundSql = new BoundSql(sql, parameter, parameterType, resultType);
+                MappedStatement mappedStatement = new MappedStatement.Builder( msId, sqlCommandType, boundSql).build();
                 // 添加解析 SQL
                 configuration.getMappedStatements().put(mappedStatement.getId(), mappedStatement);
             }

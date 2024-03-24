@@ -1,5 +1,6 @@
 package com.nbsb.mybatis.test;
 
+import com.alibaba.fastjson.JSON;
 import com.nbsb.mybatis.binding.MapperProxyFactory;
 import com.nbsb.mybatis.io.Resources;
 import com.nbsb.mybatis.session.SqlSessionFactoryBuilder;
@@ -92,18 +93,37 @@ public class SmallMybatisApplicationTests {
         // 2. 将代理的sqlsession进行打印出相关信息，如将mapper中代理的sql文本和参数、调用方法输出出来
         // 3. 将MapperRegistry方法都放到MapperConfig类中进行实现
 
-        Reader reader = Resources.getResourceAsReader("mybatis-config-datasource.xml");
-        SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
-        SqlSessionFactory sqlSessionFactory = sqlSessionFactoryBuilder.build(reader);
+//        Reader reader = Resources.getResourceAsReader("mybatis-config-datasource.xml");
+//        SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+//        SqlSessionFactory sqlSessionFactory = sqlSessionFactoryBuilder.build(reader);
+//        SqlSession sqlSession = sqlSessionFactory.openSession();
+//        //测试查询user
+//        IUserDao userMapper = sqlSession.getMapper(IUserDao.class);
+//        String name = userMapper.queryUserInfoById("1");
+//        System.out.println(name);
+//        //测试查询home
+//        IHomeInfoDao mapper = sqlSession.getMapper(IHomeInfoDao.class);
+//        String s = mapper.queryHomeName("1");
+//        System.out.println(s);
+    }
+
+    @Test
+    public void test_class_agent_4() throws DocumentException, IOException {
+        //① 上一步完成了Mapper_XML解析、SQL对象封装，并通过代理对象获取SQL语句并打印
+        //② 就基于此完成SQL的真正执行，包括解析数据源配置、建立事务框架、引入DRUID连接池、创建和使用数据源
+        // 主要内容：将上一步解析的sql进行执行，并且解析xml中的环境配置
+        //   事务方面 在后面进行实现对事务的管理，这一步只搭建一个事务管理的框架
+        // 1. 从SqlSessionFactory中获取SqlSession
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader("mybatis-config-datasource.xml"));
         SqlSession sqlSession = sqlSessionFactory.openSession();
-        //测试查询user
-        IUserDao userMapper = sqlSession.getMapper(IUserDao.class);
-        String name = userMapper.queryUserInfoById("1");
-        System.out.println(name);
-        //测试查询home
-        IHomeInfoDao mapper = sqlSession.getMapper(IHomeInfoDao.class);
-        String s = mapper.queryHomeName("1");
-        System.out.println(s);
+
+        // 2. 获取映射器对象
+        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+
+        // 3. 测试验证
+        User user = userDao.queryUserInfoById(1L);
+        logger.info("测试结果：{}", JSON.toJSONString(user));
+
 
     }
 }

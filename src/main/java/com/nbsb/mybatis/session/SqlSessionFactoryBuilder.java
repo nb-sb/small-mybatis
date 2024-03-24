@@ -18,7 +18,7 @@ public class SqlSessionFactoryBuilder {
     }
 
     //使用xml的reader将其解析为config然后在生成SqlSessionFactory
-    public SqlSessionFactory build(Reader reader) {
+        public SqlSessionFactory build(Reader reader) {
         XMLConfigBuilder xmlConfigBuilder = new XMLConfigBuilder(reader);
         Configuration parse = xmlConfigBuilder.parse();
         return build(parse);

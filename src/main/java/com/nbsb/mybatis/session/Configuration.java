@@ -1,7 +1,11 @@
 package com.nbsb.mybatis.session;
 
 import com.nbsb.mybatis.binding.MapperRegistry;
+import com.nbsb.mybatis.datasource.druid.DruidDataSourceFactory;
+import com.nbsb.mybatis.mapping.Environment;
 import com.nbsb.mybatis.mapping.MappedStatement;
+import com.nbsb.mybatis.transaction.jdbc.JdbcTransactionFactory;
+import com.nbsb.mybatis.type.TypeAliasRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +17,10 @@ import java.util.Map;
  */
 public class Configuration {
     /**
+     * 环境
+     */
+    protected Environment environment;
+    /**
      * 映射注册机
      */
     protected MapperRegistry mapperRegistry = new MapperRegistry();
@@ -21,7 +29,20 @@ public class Configuration {
      * 映射的语句，存在Map里
      */
     protected final Map<String, MappedStatement> mappedStatements = new HashMap<>();
-
+    // 类型别名注册机
+    protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+    public Configuration() {
+        //注册jdbc工厂
+        typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
+        //注册德鲁伊工厂
+        typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+    }
+    public TypeAliasRegistry getTypeAliasRegistry() {
+        return typeAliasRegistry;
+    }
+    public Environment getEnvironment() {
+        return environment;
+    }
     public MapperRegistry getMapperRegistry() {
         return mapperRegistry;
     }
@@ -32,5 +53,14 @@ public class Configuration {
 
     public Map<String, MappedStatement> getMappedStatements() {
         return mappedStatements;
+    }
+
+    public MappedStatement getMapSqlByStatements(String sm) {
+        MappedStatement mappedStatement = mappedStatements.get(sm);
+        return mappedStatement;
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 }

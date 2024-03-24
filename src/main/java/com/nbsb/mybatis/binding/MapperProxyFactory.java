@@ -22,7 +22,7 @@ public class MapperProxyFactory<T> {
 
     public  T newInstance(SqlSession sqlSession) {
         //创建mapperProxy代理，因为会调用mapperProxy中的内容
-        final MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface,methodCache);
+        final MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface, methodCache);
         return (T) Proxy.newProxyInstance(
                 mapperInterface.getClassLoader(),
                 new Class[]{mapperInterface},

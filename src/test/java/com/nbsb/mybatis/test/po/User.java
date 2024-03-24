@@ -1,8 +1,17 @@
 package com.nbsb.mybatis.test.po;
 
 public class User {
+    Long id;
     String name;
     Integer age;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
