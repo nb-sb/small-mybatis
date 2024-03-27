@@ -53,6 +53,10 @@ public class DefaultSqlSession implements SqlSession {
         }
         return null;
     }
+    /**
+     * @Des 将jdbc中的返回值装入到javabean中
+     * @Date 2024/3/24 22:07
+     */
     private <T> List<T> resultSet2Obj(ResultSet resultSet, Class<?> clazz) {
         List<T> list = new ArrayList<>();
         try {
@@ -60,6 +64,7 @@ public class DefaultSqlSession implements SqlSession {
             int columnCount = metaData.getColumnCount();
             // 每次遍历行值
             while (resultSet.next()) {
+                //获取这个类的对象
                 T obj = (T) clazz.newInstance();
                 for (int i = 1; i <= columnCount; i++) {
                     Object value = resultSet.getObject(i);
@@ -70,7 +75,8 @@ public class DefaultSqlSession implements SqlSession {
                     if (value instanceof Timestamp) {
                         method = clazz.getMethod(setMethod, Date.class);
                     } else {
-                        method = clazz.getMethod(setMethod, value.getClass());
+                        Class<?> aClass = value.getClass();
+                        method = clazz.getMethod(setMethod, aClass);
                     }
                     method.invoke(obj, value);
                 }

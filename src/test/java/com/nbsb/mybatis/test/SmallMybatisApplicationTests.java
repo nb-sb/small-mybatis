@@ -113,6 +113,7 @@ public class SmallMybatisApplicationTests {
         //② 就基于此完成SQL的真正执行，包括解析数据源配置、建立事务框架、引入DRUID连接池、创建和使用数据源
         // 主要内容：将上一步解析的sql进行执行，并且解析xml中的环境配置
         //   事务方面 在后面进行实现对事务的管理，这一步只搭建一个事务管理的框架
+        //这里的数据源连接池我们采用的是阿里的 Druid
         // 1. 从SqlSessionFactory中获取SqlSession
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader("mybatis-config-datasource.xml"));
         SqlSession sqlSession = sqlSessionFactory.openSession();
@@ -123,7 +124,13 @@ public class SmallMybatisApplicationTests {
         // 3. 测试验证
         User user = userDao.queryUserInfoById(1L);
         logger.info("测试结果：{}", JSON.toJSONString(user));
-
-
     }
-}
+
+    @Test
+    public void test_class_agent_5() throws DocumentException, IOException {
+        //将数据库工厂增加使用数据库池化，通过连接池管理和复用数据库连接，从而提高性能和吞吐量
+        //无池化的UnpooledDataSource每次都会创建新的数据库连接，不会对连接进行池化和复用，适用于小型应用或者对连接数要求不高的场景。
+        //有池化的PooledDataSource通过连接池管理连接，可以对连接进行池化和复用，有效减少了连接的创建和销毁开销，适用于高并发或对连接数要求较高的场景。
+
+
+    }}

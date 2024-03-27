@@ -21,14 +21,6 @@ public class ClassUtil {
 
     private static Set<Class<?>> classList;
 
-    static {
-        System.out.println("ClassUtil的静态代码块执行");
-        try {
-            classList = getClasses("com.ioc.web.service");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 从包package中获取所有的Class
