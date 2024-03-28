@@ -4,7 +4,11 @@ import com.nbsb.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 
 import javax.sql.DataSource;
 
-
+/**
+* @author: Wanghaonan @戏人看戏
+* @description: 池化数据源工厂
+* @create: 2024/3/28 11:22
+*/
 public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
 
     @Override

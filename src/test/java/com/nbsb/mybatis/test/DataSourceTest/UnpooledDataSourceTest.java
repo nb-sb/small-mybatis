@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -43,6 +44,18 @@ public class UnpooledDataSourceTest {
 
         Connection connection = dataSource.getConnection();
         DruidDataSourceTest.extracted(connection);
+    }
+
+    @Test
+    public void AwitTest() throws InterruptedException {
+//        List<String> list = new java.util.ArrayList<>();
+//        list.add("1");
+//        System.out.println(list);
+//        boolean remove = list.remove("3");
+//        System.out.println(list);
+        Map<String, String> modulesStartMap = new HashMap<>();
+        modulesStartMap.put("1", "1");
+        System.out.println(modulesStartMap);
     }
 
 }
