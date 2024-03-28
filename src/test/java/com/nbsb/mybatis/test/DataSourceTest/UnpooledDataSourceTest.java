@@ -42,7 +42,6 @@ public class UnpooledDataSourceTest {
         DataSource dataSource = unpooledDataSourceFactory.getDataSource();
 
         Connection connection = dataSource.getConnection();
-
         DruidDataSourceTest.extracted(connection);
     }
 

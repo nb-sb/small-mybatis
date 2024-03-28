@@ -8,7 +8,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-
+/**
+* @author: Wanghaonan @戏人看戏
+* @description: 无池化数据库连接，每次new都会有一个新的会话
+* @create: 2024/3/27 20:01
+*/
 public class UnpooledDataSource implements DataSource {
     private ClassLoader driverClassLoader;
     // 驱动配置，也可以扩展属性信息 driver.encoding=UTF8

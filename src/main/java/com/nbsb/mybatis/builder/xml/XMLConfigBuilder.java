@@ -1,5 +1,6 @@
 package com.nbsb.mybatis.builder.xml;
 
+import com.nbsb.mybatis.binding.MapperProxy;
 import com.nbsb.mybatis.builder.BaseBuilder;
 import com.nbsb.mybatis.datasource.DataSourceFactory;
 import com.nbsb.mybatis.io.Resources;
@@ -14,6 +15,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 import javax.sql.DataSource;
@@ -29,6 +32,7 @@ import java.util.regex.Pattern;
  */
 public class XMLConfigBuilder extends BaseBuilder {
     private Element root;//根节点信息,在Builder的时候存贮着根节点信息，等到parse成config类的时候在使用
+    private Logger logger = LoggerFactory.getLogger(XMLConfigBuilder.class);
     /**
      * @Des 传入对应配置文件路径地址的reader类型
      * @Date 2024/3/22 13:12
@@ -100,6 +104,7 @@ public class XMLConfigBuilder extends BaseBuilder {
             //2.获取数据源
             Element dataSourceElement = element.element("dataSource");
             String dataSourceType = dataSourceElement.attributeValue("type");
+            logger.info("使用的数据源类型:{} ",dataSourceType);
             DataSourceFactory dataSourceFactory = (DataSourceFactory) typeAliasRegistry.resolveAlias(dataSourceType).newInstance();
             List<Element> propertyList = dataSourceElement.elements("property");
             //创建属性值，类似于一个map的对象

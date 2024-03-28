@@ -2,6 +2,7 @@ package com.nbsb.mybatis.session;
 
 import com.nbsb.mybatis.binding.MapperRegistry;
 import com.nbsb.mybatis.datasource.druid.DruidDataSourceFactory;
+import com.nbsb.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import com.nbsb.mybatis.mapping.Environment;
 import com.nbsb.mybatis.mapping.MappedStatement;
 import com.nbsb.mybatis.transaction.jdbc.JdbcTransactionFactory;
@@ -36,6 +37,8 @@ public class Configuration {
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
         //注册德鲁伊工厂
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+        //注册无池化数据源工厂
+        typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
     }
     public TypeAliasRegistry getTypeAliasRegistry() {
         return typeAliasRegistry;
