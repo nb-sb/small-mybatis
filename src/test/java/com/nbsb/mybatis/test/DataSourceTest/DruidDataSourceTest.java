@@ -3,6 +3,8 @@ package com.nbsb.mybatis.test.DataSourceTest;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.nbsb.mybatis.datasource.druid.DruidDataSourceFactory ;
 import com.alibaba.druid.pool.DruidPooledConnection;
+import com.nbsb.mybatis.executor.resultset.DefaultResultSetHandler;
+import com.nbsb.mybatis.mapping.BoundSql;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -12,6 +14,7 @@ import java.net.URLClassLoader;
 import java.sql.*;
 import java.util.DuplicateFormatFlagsException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 
 public class DruidDataSourceTest {
@@ -24,8 +27,10 @@ public class DruidDataSourceTest {
         dataSource.setUsername("root");
         dataSource.setPassword("123456");
         DruidPooledConnection connection = dataSource.getConnection();
-        extracted(connection);
+        extracted2(connection);
+
     }
+
 
     static void extracted(Connection connection) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT id,name,age\n" +
@@ -38,6 +43,22 @@ public class DruidDataSourceTest {
         while (resultSet.next()) {
             System.out.println(resultSet.getLong(1) + " " + resultSet.getString(2) + " " + resultSet.getInt(3));
         }
+    }
+
+    static void extracted2(Connection connection) throws SQLException {
+        Statement statement = connection.prepareStatement("SELECT id,name,age\n" +
+                "        FROM user\n" +
+                "        where id = ?");
+        statement.setQueryTimeout(350);
+        statement.setFetchSize(10000);
+        PreparedStatement ps = (PreparedStatement) statement;
+        ps.setLong(1, 1);
+        boolean execute = ps.execute();
+        System.out.println(execute);
+        BoundSql boundSql = new BoundSql(null, null, null, "com.nbsb.mybatis.test.po.User");
+        DefaultResultSetHandler defaultResultSetHandler = new DefaultResultSetHandler(boundSql);
+        List<Object> objects = defaultResultSetHandler.handleResultSets(ps);
+        System.out.println(objects);
     }
 
     @Test

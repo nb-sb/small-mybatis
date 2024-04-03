@@ -174,7 +174,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                 String nodeName = node.getName();
                 SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
                 BoundSql boundSql = new BoundSql(sql, parameter, parameterType, resultType);
-                MappedStatement mappedStatement = new MappedStatement.Builder( msId, sqlCommandType, boundSql).build();
+                MappedStatement mappedStatement = new MappedStatement.Builder( configuration,msId, sqlCommandType, boundSql).build();
                 // 添加解析 SQL
                 configuration.getMappedStatements().put(mappedStatement.getId(), mappedStatement);
             }

@@ -16,11 +16,11 @@ public class JdbcTransactionFactory implements TransactionFactory {
 
     @Override
     public Transaction newTransaction(Connection conn) {
-        return null;
+        return new JdbcTransaction(conn);
     }
 
     @Override
     public Transaction newTransaction(DataSource dataSource, TransactionIsolationLevel level, boolean autoCommit) {
-        return null;
+        return new JdbcTransaction(dataSource, level, autoCommit);
     }
 }

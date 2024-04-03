@@ -1,5 +1,6 @@
 package com.nbsb.mybatis.test;
 
+import ch.qos.logback.classic.turbo.TurboFilter;
 import com.alibaba.fastjson.JSON;
 import com.nbsb.mybatis.binding.MapperProxyFactory;
 import com.nbsb.mybatis.io.Resources;
@@ -131,6 +132,15 @@ public class SmallMybatisApplicationTests {
         //将数据库工厂增加使用数据库池化，通过连接池管理和复用数据库连接，从而提高性能和吞吐量
         //无池化的UnpooledDataSource每次都会创建新的数据库连接，不会对连接进行池化和复用，适用于小型应用或者对连接数要求不高的场景。
         //有池化的PooledDataSource通过连接池管理连接，可以对连接进行池化和复用，有效减少了连接的创建和销毁开销，适用于高并发或对连接数要求较高的场景。
+        //详细测试代码可以看DataSourceTest中
+    }
 
-
-    }}
+    @Test
+    public void test_class_agent_6() throws DocumentException, IOException {
+        //异或语句，只要有一个为true就是ture
+        boolean a = false;
+        boolean b = true;
+        b |= a;
+        System.out.println(b);
+    }
+}

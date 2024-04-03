@@ -3,13 +3,21 @@ package com.nbsb.mybatis.session;
 import com.nbsb.mybatis.binding.MapperRegistry;
 import com.nbsb.mybatis.datasource.druid.DruidDataSourceFactory;
 import com.nbsb.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
+import com.nbsb.mybatis.executor.Executor;
+import com.nbsb.mybatis.executor.SimpleExecutor;
+import com.nbsb.mybatis.executor.resultset.DefaultResultSetHandler;
+import com.nbsb.mybatis.executor.resultset.ResultSetHandler;
+import com.nbsb.mybatis.executor.statement.PreparedStatementHandler;
+import com.nbsb.mybatis.executor.statement.StatementHandler;
+import com.nbsb.mybatis.mapping.BoundSql;
 import com.nbsb.mybatis.mapping.Environment;
 import com.nbsb.mybatis.mapping.MappedStatement;
 import com.nbsb.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import com.nbsb.mybatis.type.TypeAliasRegistry;
-
+import com.nbsb.mybatis.transaction.Transaction;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * @author: Wanghaonan @戏人看戏
@@ -65,5 +73,23 @@ public class Configuration {
 
     public void setEnvironment(Environment environment) {
         this.environment = environment;
+    }
+    /**
+     * 创建语句处理器
+     */
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+        return new PreparedStatementHandler(parameter, resultHandler, boundSql,executor,ms);
+    }
+    /**
+     * 创建结果集处理器
+     */
+    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
+        return new DefaultResultSetHandler(boundSql);
+    }
+    /**
+     * 生产执行器
+     */
+    public Executor newExecutor(Transaction transaction) {
+        return new SimpleExecutor(this, transaction);
     }
 }

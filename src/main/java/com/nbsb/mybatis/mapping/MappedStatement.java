@@ -10,6 +10,7 @@ import java.util.Map;
  * @create: 2024/3/22 13:01
  */
 public class MappedStatement {
+    private Configuration configuration;
     private String id;
     private SqlCommandType sqlCommandType;
     private BoundSql boundSql;
@@ -21,13 +22,15 @@ public class MappedStatement {
     MappedStatement() {
         // constructor disabled
     }
+
     /**
      * 使用builder进行构建
      */
     public static class Builder {
         private MappedStatement mappedStatement = new MappedStatement();
 
-        public Builder( String id, SqlCommandType sqlCommandType, BoundSql boundSql) {
+        public Builder(Configuration configuration,String id, SqlCommandType sqlCommandType, BoundSql boundSql) {
+            mappedStatement.configuration = configuration;
             mappedStatement.id = id;
             mappedStatement.sqlCommandType = sqlCommandType;
             mappedStatement.boundSql = boundSql;
@@ -61,5 +64,13 @@ public class MappedStatement {
 
     public void setBoundSql(BoundSql boundSql) {
         this.boundSql = boundSql;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }

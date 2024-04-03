@@ -1,6 +1,7 @@
 package com.nbsb.mybatis.session.defaults;
 
 import com.nbsb.mybatis.binding.MapperRegistry;
+import com.nbsb.mybatis.executor.Executor;
 import com.nbsb.mybatis.mapping.BoundSql;
 import com.nbsb.mybatis.mapping.Environment;
 import com.nbsb.mybatis.mapping.MappedStatement;
@@ -22,9 +23,10 @@ public class DefaultSqlSession implements SqlSession {
      * 映射器注册机
      */
     private Configuration configuration;
-
-    public DefaultSqlSession(Configuration configuration) {
+    private Executor executor;
+    public DefaultSqlSession(Configuration configuration, Executor executor) {
         this.configuration = configuration;
+        this.executor = executor;
     }
 
     @Override
@@ -36,20 +38,10 @@ public class DefaultSqlSession implements SqlSession {
     public <T> T selectOne(String statement, Object parameter) {
         try {
             MappedStatement mappedStatement = configuration.getMapSqlByStatements(statement);
-            Environment environment = configuration.getEnvironment();
-            Connection connection = environment.getDataSource().getConnection();
-            BoundSql boundSql = mappedStatement.getBoundSql();
-            PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSql());
-
-            preparedStatement.setLong(1, Long.parseLong(((Object[]) parameter)[0].toString()));
-            ResultSet resultSet = preparedStatement.executeQuery();
-            System.out.println(resultSet);
-            List<T> objList = resultSet2Obj(resultSet, Class.forName(boundSql.getResultType()));
-            System.out.println(objList);
-            System.out.println((T) ("你被代理了！" + "\n方法：" + statement + "\n入参：" + parameter + "\n待执行SQL：" + mappedStatement.getBoundSql().getSql()));
-            return objList.get(0);
+            List<T> list = executor.query(mappedStatement, parameter, null, mappedStatement.getBoundSql());
+            return list.get(0);
         } catch (Exception e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
         return null;
     }
