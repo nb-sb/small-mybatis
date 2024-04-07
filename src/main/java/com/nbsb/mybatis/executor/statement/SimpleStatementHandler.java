@@ -11,7 +11,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-
+/**
+* @author: Wanghaonan @戏人看戏
+* @description: 简单语句处理，没有查询参数的那些
+* @create: 2024/4/3 15:21
+*/
 public class SimpleStatementHandler extends BaseStatementHandler{
 
 
@@ -21,7 +25,7 @@ public class SimpleStatementHandler extends BaseStatementHandler{
 
     @Override
     protected Statement instantiateStatement(Connection connection) throws SQLException {
-        return null;
+        return connection.createStatement();
     }
 
     @Override
@@ -31,7 +35,9 @@ public class SimpleStatementHandler extends BaseStatementHandler{
 
     @Override
     public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
-        return null;
+        String sql = boundSql.getSql();
+        statement.execute(sql);
+        return resultSetHandler.handleResultSets(statement);
     }
 
     @Override

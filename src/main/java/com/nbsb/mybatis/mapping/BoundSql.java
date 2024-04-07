@@ -1,5 +1,8 @@
 package com.nbsb.mybatis.mapping;
 
+import com.nbsb.mybatis.session.Configuration;
+
+import java.util.List;
 import java.util.Map;
 /**
 * @author: Wanghaonan @戏人看戏
@@ -18,6 +21,8 @@ public class BoundSql {
         this.parameterType = parameterType;
         this.resultType = resultType;
     }
+
+
 
     public String getSql() {
         return sql;

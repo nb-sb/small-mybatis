@@ -15,7 +15,7 @@ public class Resources {
         return new InputStreamReader(getResourceAsStream(resource));
     }
 
-    private static InputStream getResourceAsStream(String resource) throws IOException {
+    public static InputStream getResourceAsStream(String resource) throws IOException {
         ClassLoader[] classLoaders = getClassLoaders();
         for (ClassLoader classLoader : classLoaders) {
             InputStream inputStream = classLoader.getResourceAsStream(resource);
@@ -26,7 +26,7 @@ public class Resources {
         throw new IOException("Could not find resource " + resource);
     }
 
-    private static ClassLoader[] getClassLoaders() {
+    public static ClassLoader[] getClassLoaders() {
         return new ClassLoader[]{
                 ClassLoader.getSystemClassLoader(),
                 Thread.currentThread().getContextClassLoader()};

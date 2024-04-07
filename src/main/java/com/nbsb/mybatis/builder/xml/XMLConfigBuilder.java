@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 import javax.sql.DataSource;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -137,51 +138,9 @@ public class XMLConfigBuilder extends BaseBuilder {
         List<Element> mapperList = mappers.elements("mapper");
         for (Element e : mapperList) {
             String resource = e.attributeValue("resource");
-            Reader reader = Resources.getResourceAsReader(resource);
-            SAXReader saxReader = new SAXReader();
-            Document document = saxReader.read(new InputSource(reader));
-            Element root = document.getRootElement();
-            //命名空间
-            String namespace = root.attributeValue("namespace");
-
-            // SELECT
-            List<Element> selectNodes = root.elements("select");
-            for (Element node : selectNodes) {
-                /**
-                 * <select id="queryUserInfoById" parameterType="java.lang.Long" resultType="com.nbsb.mybatis.test.po.User">
-                 *         SELECT id,name,age
-                 *         FROM user
-                 *         where id = #{id}
-                 * </select>
-                 */
-                String id = node.attributeValue("id");
-                String parameterType = node.attributeValue("parameterType");
-                String resultType = node.attributeValue("resultType");
-                String sql = node.getText();
-
-                // ? 匹配
-                Map<Integer, String> parameter = new HashMap<>();
-                Pattern pattern = Pattern.compile("(#\\{(.*?)})"); //获取#{}中的内容
-                Matcher matcher = pattern.matcher(sql);
-                for (int i = 1; matcher.find(); i++) {
-                    String g1 = matcher.group(1);//#{name}
-                    String g2 = matcher.group(2);// whn
-                    parameter.put(i, g2);//获取到参数，例如第一个参数中name填whn
-                    sql = sql.replace(g1, "?");
-                }
-
-                String msId = namespace + "." + id;//方法的类，如：com.nbsb.mybatis.test.dao.IUserDao.queryUserInfoById
-                String nodeName = node.getName();
-                SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
-                BoundSql boundSql = new BoundSql(sql, parameter, parameterType, resultType);
-                MappedStatement mappedStatement = new MappedStatement.Builder( configuration,msId, sqlCommandType, boundSql).build();
-                // 添加解析 SQL
-                configuration.getMappedStatements().put(mappedStatement.getId(), mappedStatement);
-            }
-
-            // 注册Mapper映射器
-            Class<?> type = Resources.classForName(namespace); //将这个包名称加载成类
-            configuration.getMapperRegistry().addMapper(type);
+            InputStream resourceAsStream = Resources.getResourceAsStream(resource);
+            XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(resourceAsStream, configuration, resource);
+            xmlMapperBuilder.parse();
         }
     }
 }
