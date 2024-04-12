@@ -2,6 +2,7 @@ package com.nbsb.mybatis.session;
 
 import com.nbsb.mybatis.binding.MapperRegistry;
 import com.nbsb.mybatis.datasource.druid.DruidDataSourceFactory;
+import com.nbsb.mybatis.datasource.pooled.PooledDataSourceFactory;
 import com.nbsb.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import com.nbsb.mybatis.executor.Executor;
 import com.nbsb.mybatis.executor.SimpleExecutor;
@@ -57,7 +58,7 @@ public class Configuration {
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
         //注册无池化数据源工厂
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
-
+        typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
         languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
     }
 
